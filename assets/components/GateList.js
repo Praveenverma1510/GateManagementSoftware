@@ -1,10 +1,8 @@
-// GateList.js
 import React from 'react';
 import { View, Text, Button, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { deleteGate } from '../store/gateSlice';
-import AddGateForm from './AddGateForm'; // Import the AddGateForm component
-
+import AddGateForm from './AddGateForm'; 
 const GateList = () => {
   const gates = useSelector(state => state.gates);
   const dispatch = useDispatch();

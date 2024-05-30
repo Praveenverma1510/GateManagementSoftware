@@ -20,8 +20,7 @@ const SplashScreen = () => {
       <Animatable.View
         animation="bounceIn"
         duration={2000}
-        style={styles.logoContainer}
-      >
+        style={styles.logoContainer}>
         <Icon name="shield" size={100} color="#4CAF50" />
         <Text style={styles.logoText}>Gate Management System</Text>
       </Animatable.View>

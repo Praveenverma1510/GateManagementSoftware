@@ -1,20 +1,23 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, TextInput, Image, ScrollView } from 'react-native';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from '@react-navigation/stack';
+import { FlatList } from 'react-native-gesture-handler';
 
 const { width: viewportWidth } = Dimensions.get('window');
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const carouselRef = useRef(null);
-  const [activeSlide, setActiveSlide] = React.useState(0);
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [likedItems, setLikedItems] = useState(Array(dummyData?.length).fill(false));
+  const [numColumns, setNumColumns] = useState(2);
 
   const carouselItems = [
     {
-      image: require('../IMG/Img1.jpg'), // Replace with your image paths
+      image: require('../IMG/Img1.jpg'),
     },
     {
       image: require('../IMG/Img2.jpg'),
@@ -53,6 +56,34 @@ const HomeScreen = () => {
     </View>
   );
 
+  const dummyData = [
+    { id: 0, image: require('../IMG/Girl1.jpg'), name: 'Priti', price: '$99.99' },
+    { id: 1, image: require('../IMG/Girl2.jpg'), name: 'Pritiqs', price: '$99.99' },
+    { id: 2, image: require('../IMG/Girl3.jpg'), name: 'Pritisddq', price: '$99.99' },
+    { id: 3, image: require('../IMG/Girl4.jpg'), name: 'Pritilo', price: '$99.99' },
+    { id: 4, image: require('../IMG/Girl5.jpg'), name: 'Pritdi', price: '$99.99' },
+    { id: 5, image: require('../IMG/Girl6.jpg'), name: 'Priti', price: '$99.99' },
+  ];
+
+  const toggleLike = (index) => {
+    const updatedLikedItems = [...likedItems];
+    updatedLikedItems[index] = !updatedLikedItems[index];
+    setLikedItems(updatedLikedItems);
+  };
+
+  const renderItemDATA = ({ item }) => (
+    <View style={styles.card}>
+      <Image source={item.image} style={styles.cardImage} />
+      <View style={styles.cardContent}>
+        <TouchableOpacity onPress={() => toggleLike(item.id)}>
+          <MaterialCommunityIcons name="heart" size={20} color={likedItems[item.id] ? 'red' : 'gray'} />
+        </TouchableOpacity>
+        <Text style={styles.cardTitle}>{item.name}</Text>
+        <Text style={styles.cardPrice}>{item.price}</Text>
+      </View>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -79,7 +110,7 @@ const HomeScreen = () => {
           layout={"default"}
           data={carouselItems}
           sliderWidth={viewportWidth}
-          itemWidth={viewportWidth - 60}
+          itemWidth={viewportWidth - 0}
           renderItem={renderItem}
           loop={true}
           onSnapToItem={(index) => setActiveSlide(index)}
@@ -103,7 +134,6 @@ const HomeScreen = () => {
           {categories.map((category, index) => (
             <View key={index} style={styles.categoryItem}>
               <MaterialCommunityIcons name={category.icon} size={30} color="brown" />
-              {/* <Text style={styles.categoryText}>{category.name}</Text> */}
             </View>
           ))}
         </ScrollView>
@@ -112,6 +142,16 @@ const HomeScreen = () => {
           <TouchableOpacity>
             <Text style={styles.viewAll}>View All</Text>
           </TouchableOpacity>
+        </View>
+        <View style={styles.popularContainer}>
+          <FlatList
+            data={dummyData}
+            renderItem={renderItemDATA}
+            keyExtractor={item => item.id.toString()} 
+            horizontal={false}
+            numColumns={numColumns}
+            key={numColumns}
+          />
         </View>
       </ScrollView>
     </View>
@@ -123,7 +163,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     alignItems: 'center',
-    // justifyContent: 'center',
   },
   header: {
     width: '100%',
@@ -141,11 +180,14 @@ const styles = StyleSheet.create({
     color: 'brown'
   },
   searchContainer: {
+    flex: 2,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'white',
+    justifyContent: 'center',
     borderRadius: 25,
     marginTop: 20,
+    marginLeft: 20,
     width: '90%',
     paddingHorizontal: 10,
     height: 40,
@@ -169,7 +211,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   carouselItem: {
-    // backgroundColor: 'red',
     borderRadius: 10,
     height: 140,
     overflow: 'hidden',
@@ -190,9 +231,7 @@ const styles = StyleSheet.create({
   },
   paginationDot: {
     width: 20,
-    // height: 10,
     borderRadius: 5,
-    // marginHorizontal: 8,
     backgroundColor: 'brown',
   },
   inactivePaginationDot: {
@@ -202,28 +241,29 @@ const styles = StyleSheet.create({
   categoriesHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
-    marginTop: 20,
-    paddingLeft: 20,
-    paddingRight: 20
+    alignItems: 'center',
+    marginTop: 10,
+    marginLeft: 20,
+    marginRight: 20,
+    marginBottom: 10,
   },
   categoriesTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: 'brown',
   },
   viewAll: {
-    fontSize: 14,
-    color: 'blue',
+    fontSize: 16,
+    color: 'gray',
   },
   categoriesContainer: {
-    marginTop: 10,
-    paddingHorizontal: 10,
+    flexDirection: 'row',
+    marginLeft: 20,
   },
   categoryItem: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 20,
+    margin: 10,
     width: 60,
     height: 60,
     borderRadius: 16,
@@ -235,17 +275,46 @@ const styles = StyleSheet.create({
     marginTop: 5,
     textAlign: 'center',
   },
+  popularContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginHorizontal: 10,
+  },
+  card: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 10,
+    shadowColor: 'grey',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 2,
+    marginBottom: 10,
+    width: (Dimensions.get('window').width / 2) - 20,
+    marginLeft: 10,
+    marginRight: 5,
+  },
+  cardImage: {
+    width: '100%',
+    height: 150,
+    resizeMode: 'cover',
+    borderRadius: 10,
+  },
+  cardContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  cardPrice: {
+    fontSize: 14,
+    color: 'gray',
+  },
 });
 
-const Stack = createStackNavigator();
-
-const App = () => {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-      {/* Other screens */}
-    </Stack.Navigator>
-  );
-};
-
-export default App;
+export default HomeScreen;

@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Provider } from 'react-redux';
-import Ionicons from 'react-native-vector-icons/Ionicons'; // For icons
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import store from './assets/store/store';
 import HomeScreen from './assets/screens/HomeScreen';
 import GateManagementScreen from './assets/screens/GateManagementScreen';
